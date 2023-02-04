@@ -2,11 +2,22 @@
 import cv2
 from keras.models import load_model
 import numpy as np
+import time
+
+
+def countdown(time):
+    start = time.time()
+    time_difference = 0
+    print_second_list = [1, 2, 3]
+    for seconds_count in print_second_list:
+        print(print_second_list[::-1][seconds_count - 1])
+        while time_difference < seconds_count:
+            current = time.time()
+            time_difference = current - start
 
 
 def get_prediction():
     # Load the model
-
     model = load_model('keras_model.h5')
 
     # CAMERA can be 0 or 1 based on default camera of your computer.
@@ -15,6 +26,7 @@ def get_prediction():
     # Grab the labels from the labels.txt file. This will be used later.
     # it is better to use .read().splitlines() to remove the carriage returns.
     labels = open('labels.txt', 'r').read().splitlines()
+    countdown(time)
 
     while True:
         # Grab the webcameras image.
@@ -31,8 +43,12 @@ def get_prediction():
         # returns an array of percentages. Example:[0.2,0.8] meaning its 20% sure
         # it is the first label and 80% sure its the second label.
         probabilities = model.predict(image)
-        computer_choice = labels[np.argmax(probabilities)]
-        # Print what the highest value probabilitie label
+        user_choice = labels[np.argmax(probabilities)]
+        # Print what the highest value probability label
+
         camera.release()
         cv2.destroyAllWindows()
-        return computer_choice
+        return user_choice
+
+
+
