@@ -32,8 +32,11 @@ class CameraCapturePrediction:
                 current = time.time()
                 time_difference = current - start
 
-    def print_webcam_text_to_screen(self, image_for_screen, print_time):
-        cv2.putText(image_for_screen, print_time,
+    def print_webcam_text_to_screen(self, image_for_screen, text):
+        """ prints a text to screen.
+        In this case the text is a number identifying the number of seconds counting down until last capture
+        """
+        cv2.putText(image_for_screen, text,
                     self.bottomLeftCornerOfText, self.font,
                     self.fontScale, self.fontColor,
                     self.thickness, self.lineType)
@@ -101,8 +104,6 @@ class CameraCapturePrediction:
             # Show the image in a window
             cv2.imshow('Webcam Image', image_for_screen)
             cv2.waitKey(1)
-            #camera.release()
-            #cv2.destroyAllWindows()
         return user_choice
 
 
