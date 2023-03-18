@@ -80,7 +80,6 @@ class RockPaperScissors:
             print(f"You Won {total_user_wins} times")
 
 
-rps_instance = RockPaperScissors()
-rps_instance.first_to_three_wins()
-
-
+if __name__ == "__main__":
+    rps_instance = RockPaperScissors()
+    rps_instance.first_to_three_wins()

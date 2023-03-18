@@ -27,27 +27,29 @@ class CameraCapturePrediction:
         time_difference = 0
         print_second_list = [1, 2, 3]
         for seconds_count in print_second_list:
-            print(print_second_list[::-1][seconds_count - 1])
             while time_difference < seconds_count:
                 current = time.time()
                 time_difference = current - start
 
-    def countdown_to_screen_during_video_capture(self, time_lapsed, seconds_after, image_for_screen):
-
-        if (time_lapsed < seconds_after[1]) and (time_lapsed > seconds_after[0]):
-            self.print_text_to_webcam_screen(image_for_screen, "3")
-            print("1:", time_lapsed)
-        if (time_lapsed < seconds_after[2]) and (time_lapsed > seconds_after[1]):
-            self.print_text_to_webcam_screen(image_for_screen, "2")
-            print("2:", time_lapsed)
-        if (time_lapsed < seconds_after[3]) and (time_lapsed > seconds_after[2]):
-            self.print_text_to_webcam_screen(image_for_screen, "1")
-            print("3:", time_lapsed)
+    def print_countdown_to_screen_during_video_capture(self, time_lapsed, seconds_after, image_for_screen):
+        """
+        counts down for 3 seconds, print the numbers 3, 2, 1 to screen after each second has passed.
+        This is done without a while loop, so that video capture can resume after printing to screen has completed.
+        :param time_lapsed: time object containing the amount of time that has passed.
+        :param seconds_after: list of delta time objects containing the number of seconds after time 0
+        :param image_for_screen: image array of the current frame to print the text onto
+        """
+        print_seconds = [1, 2, 3]
+        for seconds_count in print_seconds:
+            if (time_lapsed < seconds_after[seconds_count]) and (time_lapsed > seconds_after[seconds_count-1]):
+                self.print_text_to_webcam_screen(image_for_screen, str(print_seconds[::-1][seconds_count-1]))
 
 
     def print_text_to_webcam_screen(self, image_for_screen, text):
         """ prints a text to screen.
         In this case the text is a number identifying the number of seconds counting down until last capture
+        :param image_for_screen: image array of the current frame to print the text onto.
+        :param text: string containing the text to print onto that frame.
         """
         cv2.putText(image_for_screen, text,
                     self.bottomLeftCornerOfText, self.font,
@@ -62,15 +64,11 @@ class CameraCapturePrediction:
         """
         start_time = time.time()
         start_time_datetime = datetime.fromtimestamp(start_time)
-        t0 = start_time_datetime + timedelta(seconds=0)
         t1 = start_time_datetime + timedelta(seconds=1)
         t2 = start_time_datetime + timedelta(seconds=2)
         t3 = start_time_datetime + timedelta(seconds=3)
         t4 = start_time_datetime + timedelta(seconds=4)
-        seconds_after = [t0, t1, t2, t3, t4]
-
-        print("start_time", start_time)
-
+        seconds_after = [t1, t2, t3, t4]
         time_lapsed = start_time_datetime + timedelta(seconds=0)
         return start_time, seconds_after, time_lapsed
 
@@ -90,9 +88,9 @@ class CameraCapturePrediction:
         # it is better to use .read().splitlines() to remove the carriage returns.
         labels = open('labels.txt', 'r').read().splitlines()
         user_choice = ''
-        start_time, seconds_after, time_lapsed = self.get_start_time_time_deltas_and_time_lapsed
+        start_time, seconds_after, time_lapsed = self.get_start_time_time_deltas_and_time_lapsed()
 
-        while time_lapsed < seconds_after[4]:
+        while time_lapsed < seconds_after[3]:
             current_time = time.time()
             time_lapsed = datetime.fromtimestamp(current_time)
 
@@ -100,10 +98,7 @@ class CameraCapturePrediction:
             ret, image = camera.read()
             # Resize the raw image into (224-height,224-width) pixels.
             image_for_screen = cv2.resize(image, (224, 224), interpolation=cv2.INTER_AREA)
-            print(start_time)
-            self.countdown_to_screen_during_video_capture(time_lapsed, seconds_after, image_for_screen)
-
-            print("out:", time_lapsed)
+            self.print_countdown_to_screen_during_video_capture(time_lapsed, seconds_after, image_for_screen)
             # Make the image a numpy array and reshape it to the models input shape.
             image = np.asarray(image_for_screen, dtype=np.float32).reshape(1, 224, 224, 3)
             # Normalize the image array
