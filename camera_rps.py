@@ -32,7 +32,20 @@ class CameraCapturePrediction:
                 current = time.time()
                 time_difference = current - start
 
-    def print_webcam_text_to_screen(self, image_for_screen, text):
+    def countdown_to_screen_during_video_capture(self, time_lapsed, seconds_after, image_for_screen):
+
+        if (time_lapsed < seconds_after[1]) and (time_lapsed > seconds_after[0]):
+            self.print_text_to_webcam_screen(image_for_screen, "3")
+            print("1:", time_lapsed)
+        if (time_lapsed < seconds_after[2]) and (time_lapsed > seconds_after[1]):
+            self.print_text_to_webcam_screen(image_for_screen, "2")
+            print("2:", time_lapsed)
+        if (time_lapsed < seconds_after[3]) and (time_lapsed > seconds_after[2]):
+            self.print_text_to_webcam_screen(image_for_screen, "1")
+            print("3:", time_lapsed)
+
+
+    def print_text_to_webcam_screen(self, image_for_screen, text):
         """ prints a text to screen.
         In this case the text is a number identifying the number of seconds counting down until last capture
         """
@@ -40,6 +53,26 @@ class CameraCapturePrediction:
                     self.bottomLeftCornerOfText, self.font,
                     self.fontScale, self.fontColor,
                     self.thickness, self.lineType)
+
+    def get_start_time_time_deltas_and_time_lapsed(self):
+        """ gets the start time, the time stamps at different time deltas, and initialises time lapsed since the start
+        :return start_time: time stamp object of the start time.
+        :return t0 to t4: time stamp object each second after time 0, up to  seconds after.
+        :return timelapsed: time stamp initialization object after time has lapsed.
+        """
+        start_time = time.time()
+        start_time_datetime = datetime.fromtimestamp(start_time)
+        t0 = start_time_datetime + timedelta(seconds=0)
+        t1 = start_time_datetime + timedelta(seconds=1)
+        t2 = start_time_datetime + timedelta(seconds=2)
+        t3 = start_time_datetime + timedelta(seconds=3)
+        t4 = start_time_datetime + timedelta(seconds=4)
+        seconds_after = [t0, t1, t2, t3, t4]
+
+        print("start_time", start_time)
+
+        time_lapsed = start_time_datetime + timedelta(seconds=0)
+        return start_time, seconds_after, time_lapsed
 
 
     def get_prediction(self):
@@ -56,19 +89,10 @@ class CameraCapturePrediction:
         # Grab the labels from the labels.txt file. This will be used later.
         # it is better to use .read().splitlines() to remove the carriage returns.
         labels = open('labels.txt', 'r').read().splitlines()
-        start_time = time.time()
-        start_time_datetime = datetime.fromtimestamp(start_time)
-        t0 = start_time_datetime + timedelta(seconds=0)
-        t1 = start_time_datetime + timedelta(seconds=1)
-        t2 = start_time_datetime + timedelta(seconds=2)
-        t3 = start_time_datetime + timedelta(seconds=3)
-        t4 = start_time_datetime + timedelta(seconds=4)
-
-        print("start_time", start_time)
         user_choice = ''
-        time_lapsed = start_time_datetime + timedelta(seconds=0)
+        start_time, seconds_after, time_lapsed = self.get_start_time_time_deltas_and_time_lapsed
 
-        while time_lapsed < t4:
+        while time_lapsed < seconds_after[4]:
             current_time = time.time()
             time_lapsed = datetime.fromtimestamp(current_time)
 
@@ -77,14 +101,7 @@ class CameraCapturePrediction:
             # Resize the raw image into (224-height,224-width) pixels.
             image_for_screen = cv2.resize(image, (224, 224), interpolation=cv2.INTER_AREA)
             print(start_time)
-            if (time_lapsed < t1) and (time_lapsed > t0):
-                self.print_webcam_text_to_screen(image_for_screen, "3")
-                print("1:", time_lapsed)
-            if (time_lapsed < t2) and (time_lapsed > t1):
-                self.print_webcam_text_to_screen(image_for_screen, "2")
-                print("2:", time_lapsed)
-            if (time_lapsed < t3) and (time_lapsed > t2):
-                self.print_webcam_text_to_screen(image_for_screen, "1")
+            self.countdown_to_screen_during_video_capture(time_lapsed, seconds_after, image_for_screen)
 
             print("out:", time_lapsed)
             # Make the image a numpy array and reshape it to the models input shape.
