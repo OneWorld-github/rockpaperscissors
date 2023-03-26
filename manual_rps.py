@@ -1,4 +1,4 @@
-# Standard Library
+# Python Standard Library
 import random
 
 # Rock Paper Scissors
@@ -33,21 +33,20 @@ class RockPaperScissors:
         :return computer_wins: integer containing either a 1 or 0.  1 if computer won. 0 if computer lost
         :return user_wins: integer containing either a 1 or 0.  1 if user won. 0 if user lost.
         """
-        computer_wins = 0
-        user_wins = 0
+        user_wins = bool
         choice_combination = (computer_choice, user_choice)
         lose_combinations = [('paper', 'rock'), ('scissors', 'paper'), ('rock', 'scissors')]
         win_combinations = [('rock', 'paper'), ('paper', 'scissors'), ('scissors', 'rock')]
 
         if choice_combination in lose_combinations:
             print("You lost!")
-            computer_wins = 1
+            user_wins = False
         elif choice_combination in win_combinations:
             print("You won!")
-            user_wins = 1
+            user_wins = True
         else:
             print("it is a tie!")
-        return computer_wins, user_wins
+        return user_wins
 
     def play(self):
         """
@@ -59,8 +58,8 @@ class RockPaperScissors:
         user_choice = self.get_user_choice()
         print("computer choice: ", computer_choice)
         print("user choice: ", user_choice)
-        computer_win, user_win = self.get_winner(computer_choice, user_choice)
-        return computer_win, user_win
+        user_wins = self.get_winner(computer_choice, user_choice)
+        return user_wins
 
     def first_to_three_wins(self):
         """
@@ -68,12 +67,13 @@ class RockPaperScissors:
         you or the computer reach three wins.
 
         """
-        total_computer_wins = 0
-        total_user_wins = 0
+        total_computer_wins, total_user_wins = 0, 0
         while total_computer_wins <= 3 and total_user_wins <= 3:
-                computer_wins, user_wins = self.play()
-                total_computer_wins += computer_wins
-                total_user_wins += user_wins
+                user_wins = self.play()
+                if user_wins:
+                    total_user_wins += 1
+                else:
+                    total_computer_wins += 1
         if total_computer_wins > total_user_wins:
             print(f"You Lost {total_computer_wins} times")
         else:

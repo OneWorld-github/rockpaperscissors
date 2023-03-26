@@ -1,10 +1,12 @@
+# Python Standard Library
+from datetime import datetime
+from datetime import timedelta
+import time
+
 # Third Party
 import cv2
 from keras.models import load_model
 import numpy as np
-import time
-from datetime import datetime
-from datetime import timedelta
 
 
 class CameraCapturePrediction:
@@ -18,19 +20,6 @@ class CameraCapturePrediction:
         self.thickness = 2
         self.lineType = 4
 
-    def countdown(self, time):
-        """
-        counts for 3 seconds printing count to screen without using sleep.
-        :param time: object
-        """
-        start = time.time()
-        time_difference = 0
-        print_second_list = [1, 2, 3]
-        for seconds_count in print_second_list:
-            while time_difference < seconds_count:
-                current = time.time()
-                time_difference = current - start
-
     def print_countdown_to_screen_during_video_capture(self, time_lapsed, seconds_after, image_for_screen):
         """
         counts down for 3 seconds, print the numbers 3, 2, 1 to screen after each second has passed.
@@ -43,7 +32,6 @@ class CameraCapturePrediction:
         for seconds_count in print_seconds:
             if (time_lapsed < seconds_after[seconds_count]) and (time_lapsed > seconds_after[seconds_count-1]):
                 self.print_text_to_webcam_screen(image_for_screen, str(print_seconds[::-1][seconds_count-1]))
-
 
     def print_text_to_webcam_screen(self, image_for_screen, text):
         """ prints a text to screen.
@@ -72,7 +60,6 @@ class CameraCapturePrediction:
         time_lapsed = start_time_datetime + timedelta(seconds=0)
         return start_time, seconds_after, time_lapsed
 
-
     def get_prediction(self):
         """
         get what the camera predicted the hand pose to be.
@@ -87,7 +74,6 @@ class CameraCapturePrediction:
         # Grab the labels from the labels.txt file. This will be used later.
         # it is better to use .read().splitlines() to remove the carriage returns.
         labels = open('labels.txt', 'r').read().splitlines()
-        user_choice = ''
         start_time, seconds_after, time_lapsed = self.get_start_time_time_deltas_and_time_lapsed()
 
         while time_lapsed < seconds_after[3]:
@@ -117,6 +103,3 @@ class CameraCapturePrediction:
             cv2.imshow('Webcam Image', image_for_screen)
             cv2.waitKey(1)
         return user_choice
-
-
-
