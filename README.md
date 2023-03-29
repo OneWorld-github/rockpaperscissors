@@ -4,6 +4,15 @@ This model was trained on roughly 60-70 images in each of the of the Rock, Paper
 
 The input was a desktop webcam, and it uses Googles Teachable Machine to organise the data and train the Image model.
 
+The code provides a count down of three seconds (6, 5, 4) prior to prediction.
+
+My home setup has a usb webcam on a cable sat on my desk, and so there are more image variations from this setup 
+than there would be from a laptop webcam which is on a fixed plane.  Because of this I have implemented the final
+3 second count down to happen during prediction.
+It counts down 3 more seconds (3, 2, 1) during prediction, and prints the prediction to screen for each of those frames
+to provide feedback to the user as to what pose the camera is capturing in realtime, before the final prediction is 
+sent into the game logic.
+
 
 # Milestone 3
 
@@ -27,11 +36,6 @@ Uses delta time, and prints the time count down to screen
 ![paper.png](paper.png)
 
 # Further improvements
-The count down doesn't count 3, 2, 1 in time to seconds
-Needs some more work to make the count down count more consistently with the timing of
-each second.  At the moment the 3, and 2 count within an split second, and then video 
-capture freezes on 1.
-
 It would be useful to make it so that you can press a key on the keyboard when
 it captures the correct pose whether that be rock, paper or scissors.
 So that you can move your hand around, until you get the prediction you want
